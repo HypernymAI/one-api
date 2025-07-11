@@ -9,3 +9,6 @@ logs
 data
 /web/node_modules
 cmd.md
+.DS_Store
+/one-api
+/one-api-en

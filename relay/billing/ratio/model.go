@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	USD2RMB = 7
-	USD     = 500 // $0.002 = 1 -> $1 = 500
-	RMB     = USD / USD2RMB
+	USD2RMB   = 7
+	USD       = 500 // $0.002 = 1 -> $1 = 500
+	MILLI_USD = 1.0 / 1000 * USD
+	RMB       = USD / USD2RMB
 )
 
 // ModelRatio
@@ -27,12 +28,20 @@ var ModelRatio = map[string]float64{
 	"gpt-4-32k":               30,
 	"gpt-4-32k-0314":          30,
 	"gpt-4-32k-0613":          30,
-	"gpt-4-1106-preview":      5,    // $0.01 / 1K tokens
-	"gpt-4-0125-preview":      5,    // $0.01 / 1K tokens
-	"gpt-4-turbo-preview":     5,    // $0.01 / 1K tokens
-	"gpt-4-turbo":             5,    // $0.01 / 1K tokens
-	"gpt-4-turbo-2024-04-09":  5,    // $0.01 / 1K tokens
-	"gpt-4-vision-preview":    5,    // $0.01 / 1K tokens
+	"gpt-4-1106-preview":      5, // $0.01 / 1K tokens
+	"gpt-4-0125-preview":      5, // $0.01 / 1K tokens
+	"gpt-4-turbo-preview":     5, // $0.01 / 1K tokens
+	"gpt-4-turbo":             5, // $0.01 / 1K tokens
+	"gpt-4-turbo-2024-04-09":  5, // $0.01 / 1K tokens
+	"gpt-4-vision-preview":    5, // $0.01 / 1K tokens
+	"gpt-4o":                  2.5,
+	"gpt-4o-2024-05-13":       2.5,
+	"gpt-4.1-nano":            0.1,
+	"gpt-4.1-mini":            0.4,
+	"gpt-4.1":                 2.0,
+	"gpt-4.5-preview":         2.0,
+	"gpt-4o-mini":             0.25,
+	"gpt-4o-mini-2024-07-18":  0.25,
 	"gpt-3.5-turbo":           0.25, // $0.0005 / 1K tokens
 	"gpt-3.5-turbo-0301":      0.75,
 	"gpt-3.5-turbo-0613":      0.75,
@@ -67,13 +76,30 @@ var ModelRatio = map[string]float64{
 	"text-moderation-latest":  0.1,
 	"dall-e-2":                0.02 * USD, // $0.016 - $0.020 / image
 	"dall-e-3":                0.04 * USD, // $0.040 - $0.120 / image
+	// ZX7M9: O3/O4 models (April 2025 release)
+	"o3":                      15.0,
+	"o3-2025-04-16":           15.0,
+	"o3-mini":                 1.5,
+	"o3-mini-2025-01-31":      1.5,
+	"o4-mini":                 0.75,
+	"o4-mini-2025-04-16":      0.75,
 	// https://www.anthropic.com/api#pricing
-	"claude-instant-1.2":       0.8 / 1000 * USD,
-	"claude-2.0":               8.0 / 1000 * USD,
-	"claude-2.1":               8.0 / 1000 * USD,
-	"claude-3-haiku-20240307":  0.25 / 1000 * USD,
-	"claude-3-sonnet-20240229": 3.0 / 1000 * USD,
-	"claude-3-opus-20240229":   15.0 / 1000 * USD,
+	// DEPRECATED: "claude-instant-1.2": 0.8 / 1000 * USD,
+	// DEPRECATED: "claude-2.0": 8.0 / 1000 * USD,
+	// DEPRECATED: "claude-2.1": 8.0 / 1000 * USD,
+	"claude-3-haiku-20240307":    0.25 / 1000 * USD,
+	"claude-3-sonnet-20240229":   3.0 / 1000 * USD,
+	"claude-3-opus-20240229":     15.0 / 1000 * USD,
+	"claude-3-5-sonnet-20240620": 3.0 / 1000 * USD,
+	// ZX7M9: Latest Claude models
+	"claude-3-5-haiku-20241022":  1.0 / 1000 * USD,
+	"claude-3-5-haiku-latest":    1.0 / 1000 * USD,
+	"claude-3-5-sonnet-20241022": 3.0 / 1000 * USD,
+	"claude-3-5-sonnet-latest":   3.0 / 1000 * USD,
+	"claude-3-7-sonnet-20250219": 3.0 / 1000 * USD,
+	"claude-3-7-sonnet-latest":   3.0 / 1000 * USD,
+	"claude-opus-4-20250514":     15.0 / 1000 * USD,
+	"claude-sonnet-4-20250514":   3.0 / 1000 * USD,
 	// https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlrk4akp7
 	"ERNIE-4.0-8K":       0.120 * RMB,
 	"ERNIE-3.5-8K":       0.012 * RMB,
@@ -93,11 +119,24 @@ var ModelRatio = map[string]float64{
 	"tao-8k":             0.002 * RMB,
 	// https://ai.google.dev/pricing
 	"PaLM-2":                    1,
-	"gemini-pro":                1, // $0.00025 / 1k characters -> $0.001 / 1k tokens
+	// "gemini-pro":             1, // DEPRECATED - use gemini-1.5-pro
 	"gemini-pro-vision":         1, // $0.00025 / 1k characters -> $0.001 / 1k tokens
 	"gemini-1.0-pro-vision-001": 1,
-	"gemini-1.0-pro-001":        1,
+	// "gemini-1.0-pro-001":     1, // DEPRECATED
 	"gemini-1.5-pro":            1,
+	// ZX7M9: Additional Gemini models
+	"gemini-1.5-flash":          0.075 * MILLI_USD,
+	"gemini-1.5-flash-8b":       0.0375 * MILLI_USD,
+	"gemini-1.5-pro-experimental": 1.25 * MILLI_USD,
+	"gemini-2.0-flash":          0.075 * MILLI_USD,
+	"gemini-2.0-flash-exp":      0.075 * MILLI_USD,
+	"gemini-2.0-flash-lite-preview-02-05": 0.0375 * MILLI_USD,
+	"gemini-2.0-flash-thinking-exp-01-21": 0.075 * MILLI_USD,
+	"gemini-2.0-pro-exp-02-05":  1.25 * MILLI_USD,
+	"gemini-2.5-flash":          0.0375 * MILLI_USD,
+	"gemini-2.5-pro":            2.5 * MILLI_USD,
+	"text-embedding-004":        0.01 * MILLI_USD,
+	"aqa":                       1,
 	// https://open.bigmodel.cn/pricing
 	"glm-4":         0.1 * RMB,
 	"glm-4v":        0.1 * RMB,
@@ -175,6 +214,8 @@ var ModelRatio = map[string]float64{
 	// https://platform.deepseek.com/api-docs/pricing/
 	"deepseek-chat":  1.0 / 1000 * RMB,
 	"deepseek-coder": 1.0 / 1000 * RMB,
+	// ZX7M9: DeepSeek R1 reasoning model
+	"deepseek-reasoner": 0.14,  // ~$0.00028/1K tokens
 	// https://www.deepl.com/pro?cta=header-prices
 	"deepl-zh": 25.0 / 1000 * USD,
 	"deepl-en": 25.0 / 1000 * USD,
@@ -280,7 +321,16 @@ func GetCompletionRatio(name string) float64 {
 		return 4.0 / 3.0
 	}
 	if strings.HasPrefix(name, "gpt-4") {
+		if strings.HasPrefix(name, "gpt-4o") {
+			return 6
+		}
+		if strings.HasPrefix(name, "gpt-41") {
+			return 2
+		}
 		if strings.HasPrefix(name, "gpt-4-turbo") || strings.HasSuffix(name, "preview") {
+			return 3
+		}
+		if strings.HasPrefix(name, "gpt-4o-mini") {
 			return 3
 		}
 		return 2
