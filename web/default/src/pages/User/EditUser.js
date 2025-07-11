@@ -76,7 +76,7 @@ const EditUser = () => {
     }
     const { success, message } = res.data;
     if (success) {
-      showSuccess('用户信息更新成功！');
+      showSuccess('User information updated successfully!');
     } else {
       showError(message);
     }
@@ -85,13 +85,13 @@ const EditUser = () => {
   return (
     <>
       <Segment loading={loading}>
-        <Header as='h3'>更新用户信息</Header>
+        <Header as='h3'>Update User Information</Header>
         <Form autoComplete='new-password'>
           <Form.Field>
             <Form.Input
-              label='用户名'
+              label='Username'
               name='username'
-              placeholder={'请输入新的用户名'}
+              placeholder={'Please enter new username'}
               onChange={handleInputChange}
               value={username}
               autoComplete='new-password'
@@ -99,10 +99,10 @@ const EditUser = () => {
           </Form.Field>
           <Form.Field>
             <Form.Input
-              label='密码'
+              label='Password'
               name='password'
               type={'password'}
-              placeholder={'请输入新的密码，最短 8 位'}
+              placeholder={'Please enter new password, minimum 8 characters'}
               onChange={handleInputChange}
               value={password}
               autoComplete='new-password'
@@ -110,9 +110,9 @@ const EditUser = () => {
           </Form.Field>
           <Form.Field>
             <Form.Input
-              label='显示名称'
+              label='Display Name'
               name='display_name'
-              placeholder={'请输入新的显示名称'}
+              placeholder={'Please enter new display name'}
               onChange={handleInputChange}
               value={display_name}
               autoComplete='new-password'
@@ -122,14 +122,14 @@ const EditUser = () => {
             userId && <>
               <Form.Field>
                 <Form.Dropdown
-                  label='分组'
-                  placeholder={'请选择分组'}
+                  label='Group'
+                  placeholder={'Please select group'}
                   name='group'
                   fluid
                   search
                   selection
                   allowAdditions
-                  additionLabel={'请在系统设置页面编辑分组倍率以添加新的分组：'}
+                  additionLabel={'Please edit group rates on the system settings page to add new groups:'}
                   onChange={handleInputChange}
                   value={inputs.group}
                   autoComplete='new-password'
@@ -138,9 +138,9 @@ const EditUser = () => {
               </Form.Field>
               <Form.Field>
                 <Form.Input
-                  label={`剩余额度${renderQuotaWithPrompt(quota)}`}
+                  label={`Remaining Balance${renderQuotaWithPrompt(quota)}`}
                   name='quota'
-                  placeholder={'请输入新的剩余额度'}
+                  placeholder={'Please enter new remaining balance'}
                   onChange={handleInputChange}
                   value={quota}
                   type={'number'}
@@ -151,36 +151,36 @@ const EditUser = () => {
           }
           <Form.Field>
             <Form.Input
-              label='已绑定的 GitHub 账户'
+              label='Bound GitHub Account'
               name='github_id'
               value={github_id}
               autoComplete='new-password'
-              placeholder='此项只读，需要用户通过个人设置页面的相关绑定按钮进行绑定，不可直接修改'
+              placeholder='This field is read-only. Users need to bind through the binding buttons on the personal settings page and cannot be modified directly'
               readOnly
             />
           </Form.Field>
           <Form.Field>
             <Form.Input
-              label='已绑定的微信账户'
+              label='Bound WeChat Account'
               name='wechat_id'
               value={wechat_id}
               autoComplete='new-password'
-              placeholder='此项只读，需要用户通过个人设置页面的相关绑定按钮进行绑定，不可直接修改'
+              placeholder='This field is read-only. Users need to bind through the binding buttons on the personal settings page and cannot be modified directly'
               readOnly
             />
           </Form.Field>
           <Form.Field>
             <Form.Input
-              label='已绑定的邮箱账户'
+              label='Bound Email Account'
               name='email'
               value={email}
               autoComplete='new-password'
-              placeholder='此项只读，需要用户通过个人设置页面的相关绑定按钮进行绑定，不可直接修改'
+              placeholder='This field is read-only. Users need to bind through the binding buttons on the personal settings page and cannot be modified directly'
               readOnly
             />
           </Form.Field>
-          <Button onClick={handleCancel}>取消</Button>
-          <Button positive onClick={submit}>提交</Button>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button positive onClick={submit}>Submit</Button>
         </Form>
       </Segment>
     </>

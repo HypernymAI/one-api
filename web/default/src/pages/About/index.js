@@ -20,7 +20,7 @@ const About = () => {
       localStorage.setItem('about', aboutContent);
     } else {
       showError(message);
-      setAbout('加载关于内容失败...');
+      setAbout('Failed to load about content...');
     }
     setAboutLoaded(true);
   };
@@ -34,9 +34,9 @@ const About = () => {
       {
         aboutLoaded && about === '' ? <>
           <Segment>
-            <Header as='h3'>关于</Header>
-            <p>可在设置页面设置关于内容，支持 HTML & Markdown</p>
-            项目仓库地址：
+            <Header as='h3'>About</Header>
+            <p>You can set the about content on the settings page, supports HTML & Markdown</p>
+            Project Repository:
             <a href='https://github.com/songquanpeng/one-api'>
               https://github.com/songquanpeng/one-api
             </a>

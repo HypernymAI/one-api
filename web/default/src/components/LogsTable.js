@@ -14,30 +14,30 @@ function renderTimestamp(timestamp) {
 }
 
 const MODE_OPTIONS = [
-  { key: 'all', text: '全部用户', value: 'all' },
-  { key: 'self', text: '当前用户', value: 'self' }
+  { key: 'all', text: 'All Users', value: 'all' },
+  { key: 'self', text: 'Current User', value: 'self' }
 ];
 
 const LOG_OPTIONS = [
-  { key: '0', text: '全部', value: 0 },
-  { key: '1', text: '充值', value: 1 },
-  { key: '2', text: '消费', value: 2 },
-  { key: '3', text: '管理', value: 3 },
-  { key: '4', text: '系统', value: 4 }
+  { key: '0', text: 'All', value: 0 },
+  { key: '1', text: 'Top Up', value: 1 },
+  { key: '2', text: 'Consumption', value: 2 },
+  { key: '3', text: 'Management', value: 3 },
+  { key: '4', text: 'System', value: 4 }
 ];
 
 function renderType(type) {
   switch (type) {
     case 1:
-      return <Label basic color='green'> 充值 </Label>;
+      return <Label basic color='green'> Top Up </Label>;
     case 2:
-      return <Label basic color='olive'> 消费 </Label>;
+      return <Label basic color='olive'> Consumption </Label>;
     case 3:
-      return <Label basic color='orange'> 管理 </Label>;
+      return <Label basic color='orange'> Management </Label>;
     case 4:
-      return <Label basic color='purple'> 系统 </Label>;
+      return <Label basic color='purple'> System </Label>;
     default:
-      return <Label basic color='black'> 未知 </Label>;
+      return <Label basic color='black'> Unknown </Label>;
   }
 }
 
@@ -199,34 +199,34 @@ const LogsTable = () => {
     <>
       <Segment>
         <Header as='h3'>
-          使用明细（总消耗额度：
+          Usage Details (Total Consumed Balance:
           {showStat && renderQuota(stat.quota)}
-          {!showStat && <span onClick={handleEyeClick} style={{ cursor: 'pointer', color: 'gray' }}>点击查看</span>}
+          {!showStat && <span onClick={handleEyeClick} style={{ cursor: 'pointer', color: 'gray' }}>Click to View</span>}
           ）
         </Header>
         <Form>
           <Form.Group>
-            <Form.Input fluid label={'令牌名称'} width={3} value={token_name}
-                        placeholder={'可选值'} name='token_name' onChange={handleInputChange} />
-            <Form.Input fluid label='模型名称' width={3} value={model_name} placeholder='可选值'
+            <Form.Input fluid label={'Token Name'} width={3} value={token_name}
+                        placeholder={'Optional'} name='token_name' onChange={handleInputChange} />
+            <Form.Input fluid label='Model Name' width={3} value={model_name} placeholder='Optional'
                         name='model_name'
                         onChange={handleInputChange} />
-            <Form.Input fluid label='起始时间' width={4} value={start_timestamp} type='datetime-local'
+            <Form.Input fluid label='Start Time' width={4} value={start_timestamp} type='datetime-local'
                         name='start_timestamp'
                         onChange={handleInputChange} />
-            <Form.Input fluid label='结束时间' width={4} value={end_timestamp} type='datetime-local'
+            <Form.Input fluid label='End Time' width={4} value={end_timestamp} type='datetime-local'
                         name='end_timestamp'
                         onChange={handleInputChange} />
-            <Form.Button fluid label='操作' width={2} onClick={refresh}>查询</Form.Button>
+            <Form.Button fluid label='Action' width={2} onClick={refresh}>Search</Form.Button>
           </Form.Group>
           {
             isAdminUser && <>
               <Form.Group>
-                <Form.Input fluid label={'渠道 ID'} width={3} value={channel}
-                            placeholder='可选值' name='channel'
+                <Form.Input fluid label={'Channel ID'} width={3} value={channel}
+                            placeholder='Optional' name='channel'
                             onChange={handleInputChange} />
-                <Form.Input fluid label={'用户名称'} width={3} value={username}
-                            placeholder={'可选值'} name='username'
+                <Form.Input fluid label={'Username'} width={3} value={username}
+                            placeholder={'Optional'} name='username'
                             onChange={handleInputChange} />
 
               </Form.Group>
@@ -243,7 +243,7 @@ const LogsTable = () => {
                 }}
                 width={3}
               >
-                时间
+                Time
               </Table.HeaderCell>
               {
                 isAdminUser && <Table.HeaderCell
@@ -253,7 +253,7 @@ const LogsTable = () => {
                   }}
                   width={1}
                 >
-                  渠道
+                  Channel
                 </Table.HeaderCell>
               }
               {
@@ -264,7 +264,7 @@ const LogsTable = () => {
                   }}
                   width={1}
                 >
-                  用户
+                  User
                 </Table.HeaderCell>
               }
               <Table.HeaderCell
@@ -274,7 +274,7 @@ const LogsTable = () => {
                 }}
                 width={1}
               >
-                令牌
+                Token
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
@@ -283,7 +283,7 @@ const LogsTable = () => {
                 }}
                 width={1}
               >
-                类型
+                Type
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
@@ -292,7 +292,7 @@ const LogsTable = () => {
                 }}
                 width={2}
               >
-                模型
+                Model
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
@@ -301,7 +301,7 @@ const LogsTable = () => {
                 }}
                 width={1}
               >
-                提示
+                Prompt
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
@@ -310,7 +310,7 @@ const LogsTable = () => {
                 }}
                 width={1}
               >
-                补全
+                Completion
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
@@ -319,7 +319,7 @@ const LogsTable = () => {
                 }}
                 width={1}
               >
-                额度
+                Balance
               </Table.HeaderCell>
               <Table.HeaderCell
                 style={{ cursor: 'pointer' }}
@@ -328,7 +328,7 @@ const LogsTable = () => {
                 }}
                 width={isAdminUser ? 4 : 6}
               >
-                详情
+                Details
               </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
@@ -370,7 +370,7 @@ const LogsTable = () => {
             <Table.Row>
               <Table.HeaderCell colSpan={'10'}>
                 <Select
-                  placeholder='选择明细分类'
+                  placeholder='Select Detail Category'
                   options={LOG_OPTIONS}
                   style={{ marginRight: '8px' }}
                   name='logType'
@@ -379,7 +379,7 @@ const LogsTable = () => {
                     setLogType(value);
                   }}
                 />
-                <Button size='small' onClick={refresh} loading={loading}>刷新</Button>
+                <Button size='small' onClick={refresh} loading={loading}>Refresh</Button>
                 <Pagination
                   floated='right'
                   activePage={activePage}

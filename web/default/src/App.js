@@ -62,11 +62,11 @@ function App() {
         process.env.REACT_APP_VERSION !== ''
       ) {
         showNotice(
-          `新版本可用：${data.version}，请使用快捷键 Shift + F5 刷新页面`
+          `New version available: ${data.version}, please use Shift + F5 to refresh the page`
         );
       }
     } else {
-      showError('无法正常连接至服务器！');
+      showError('Unable to connect to the server!');
     }
   };
 
