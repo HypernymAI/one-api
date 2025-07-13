@@ -1,0 +1,8 @@
+[SYS] 2025/07/12 - 01:26:36 | One API v0.0.0 started 
+[SYS] 2025/07/12 - 01:26:36 | SQL_DSN not set, using SQLite as database 
+[SYS] 2025/07/12 - 01:26:36 | database migration started 
+[SYS] 2025/07/12 - 01:26:36 | database migrated 
+[SYS] 2025/07/12 - 01:26:36 | REDIS_CONN_STRING not set, Redis is not enabled 
+[SYS] 2025/07/12 - 01:26:36 | using theme default 
+[SYS] 2025/07/12 - 01:26:36 | initializing token encoders 
+[SYS] 2025/07/12 - 01:26:36 | token encoders initialized 

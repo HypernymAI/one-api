@@ -43,7 +43,18 @@ func ConvertRequest(textRequest model.GeneralOpenAIRequest) *Request {
 		Stream:      textRequest.Stream,
 	}
 	if claudeRequest.MaxTokens == 0 {
-		claudeRequest.MaxTokens = 4096
+		// Set model-specific defaults when not specified
+		// Anthropic API requires max_tokens parameter
+		switch claudeRequest.Model {
+		case "claude-opus-4-20250514", "claude-sonnet-4-20250514":
+			claudeRequest.MaxTokens = 32000
+		case "claude-3-5-sonnet-20241022", "claude-3-5-sonnet-latest":
+			claudeRequest.MaxTokens = 8192
+		case "claude-3-7-sonnet-20250219", "claude-3-7-sonnet-latest":
+			claudeRequest.MaxTokens = 8192 // Can go up to 128K with beta header
+		default:
+			claudeRequest.MaxTokens = 4096
+		}
 	}
 	// legacy model name mapping
 	if claudeRequest.Model == "claude-instant-1" {
