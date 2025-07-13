@@ -84,6 +84,30 @@ Initially considered removing the default entirely (like other adapters), but re
    - Claude Sonnet 4 (32,000)
 3. Check AWS Claude and Vertex AI Claude adapters still function
 
+## Testing Results
+Verified the fix is working correctly:
+```bash
+# Test 1: Count to 2000 (simple verification)
+curl -X POST http://localhost:3000/v1/chat/completions \
+  -H "Authorization: Bearer sk-BoroIrY7uCruh3IR48Cb5b151f8943E88bF86e3d91Ee2bB2" \
+  -d '{
+    "model": "claude-opus-4-20250514",
+    "messages": [{"role": "user", "content": "Count from 1 to 2000, with each number on a new line."}]
+  }'
+# Result: 2002 lines generated (2000 numbers + newlines)
+
+# Test 2: Large token generation
+curl -X POST http://localhost:3000/v1/chat/completions \
+  -H "Authorization: Bearer sk-BoroIrY7uCruh3IR48Cb5b151f8943E88bF86e3d91Ee2bB2" \
+  -d '{
+    "model": "claude-opus-4-20250514",
+    "messages": [{"role": "user", "content": "Count from 1 to 3000, one number per line"}]
+  }'
+# Result: 8,036 completion tokens - SUCCESS! (well above 4,096 limit)
+```
+
+✅ **Confirmed**: Claude Opus 4 now properly uses higher token limits when max_tokens is not specified
+
 ## Related Files
 - `/relay/adaptor/anthropic/main.go` - Fixed file
 - `/upstream-check/relay/adaptor/vertexai/claude/adapter.go` - Uses anthropic.ConvertRequest
