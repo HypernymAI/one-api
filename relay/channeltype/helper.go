@@ -35,6 +35,8 @@ func ToAPIType(channelType int) int {
 		apiType = apitype.Cloudflare
 	case DeepL:
 		apiType = apitype.DeepL
+	case GoogleOpenAI:
+		apiType = apitype.OpenAI
 	}
 
 	return apiType

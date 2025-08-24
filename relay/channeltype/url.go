@@ -1,5 +1,7 @@
 package channeltype
 
+import "fmt"
+
 var ChannelBaseURLs = []string{
 	"",                              // 0
 	"https://api.openai.com",        // 1
@@ -41,10 +43,13 @@ var ChannelBaseURLs = []string{
 	"https://api.cloudflare.com",                // 37
 	"https://api-free.deepl.com",                // 38
 	"https://api.together.xyz",                  // 39
+	"",                                          // 40 - GoogleOpenAI
 }
 
 func init() {
+	fmt.Printf("ChannelBaseURLs length: %d\n", len(ChannelBaseURLs))
+	fmt.Printf("Dummy value: %d\n", Dummy)
 	if len(ChannelBaseURLs) != Dummy {
-		panic("channel base urls length not match")
+		panic(fmt.Sprintf("channel base urls length not match: got %d, want %d", len(ChannelBaseURLs), Dummy))
 	}
 }

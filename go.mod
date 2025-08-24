@@ -1,7 +1,9 @@
 module github.com/songquanpeng/one-api
 
 // +heroku goVersion go1.18
-go 1.20
+go 1.23.0
+
+toolchain go1.24.6
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1
@@ -31,6 +33,7 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.2 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.5 // indirect
@@ -77,6 +80,7 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

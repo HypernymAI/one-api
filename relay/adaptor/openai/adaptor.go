@@ -1,6 +1,7 @@
 package openai
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -10,6 +11,7 @@ import (
 	"github.com/songquanpeng/one-api/relay/meta"
 	"github.com/songquanpeng/one-api/relay/model"
 	"github.com/songquanpeng/one-api/relay/relaymode"
+	"golang.org/x/oauth2/google"
 	"io"
 	"net/http"
 	"strings"
@@ -43,6 +45,11 @@ func (a *Adaptor) GetRequestURL(meta *meta.Meta) (string, error) {
 		// {your endpoint}/openai/deployments/{your azure_model}/chat/completions?api-version={api_version}
 		requestURL = fmt.Sprintf("/openai/deployments/%s/%s", model_, task)
 		return GetFullRequestURL(meta.BaseURL, requestURL, meta.ChannelType), nil
+	case channeltype.GoogleOpenAI:
+		// https://${ENDPOINT}/v1/projects/${PROJECT_ID}/locations/${REGION}/endpoints/openapi/chat/completions
+		task := strings.TrimPrefix(meta.RequestURLPath, "/v1/")
+		requestURL := fmt.Sprintf("/v1/projects/%s/locations/%s/endpoints/openapi/%s", meta.Config.ProjectID, meta.Config.Region, task)
+		return GetFullRequestURL(meta.BaseURL, requestURL, meta.ChannelType), nil
 	case channeltype.Minimax:
 		return minimax.GetRequestURL(meta)
 	default:
@@ -56,12 +63,46 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Request, meta *me
 		req.Header.Set("api-key", meta.APIKey)
 		return nil
 	}
+	if meta.ChannelType == channeltype.GoogleOpenAI {
+		// Check if APIKey is service account JSON
+		if strings.HasPrefix(meta.APIKey, "{") && strings.Contains(meta.APIKey, "private_key") {
+			// Generate OAuth token from service account JSON
+			token, err := getGoogleCloudToken(meta.APIKey)
+			if err != nil {
+				return fmt.Errorf("failed to get Google Cloud token: %v", err)
+			}
+			req.Header.Set("Authorization", "Bearer "+token)
+		} else {
+			// Treat as access token
+			req.Header.Set("Authorization", "Bearer "+meta.APIKey)
+		}
+		return nil
+	}
 	req.Header.Set("Authorization", "Bearer "+meta.APIKey)
 	if meta.ChannelType == channeltype.OpenRouter {
 		req.Header.Set("HTTP-Referer", "https://github.com/songquanpeng/one-api")
 		req.Header.Set("X-Title", "One API")
 	}
 	return nil
+}
+
+func getGoogleCloudToken(serviceAccountJSON string) (string, error) {
+	ctx := context.Background()
+	
+	// Parse the service account JSON
+	creds, err := google.CredentialsFromJSON(ctx, []byte(serviceAccountJSON), 
+		"https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		return "", fmt.Errorf("failed to parse service account JSON: %v", err)
+	}
+	
+	// Get the token
+	token, err := creds.TokenSource.Token()
+	if err != nil {
+		return "", fmt.Errorf("failed to get token: %v", err)
+	}
+	
+	return token.AccessToken, nil
 }
 
 func (a *Adaptor) ConvertRequest(c *gin.Context, relayMode int, request *model.GeneralOpenAIRequest) (any, error) {

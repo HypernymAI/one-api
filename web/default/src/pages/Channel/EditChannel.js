@@ -74,6 +74,7 @@ const EditChannel = () => {
     sk: '',
     ak: '',
     user_id: '',
+    project_id: '',
   });
   const handleInputChange = (e, { name, value }) => {
     setInputs((inputs) => ({ ...inputs, [name]: value }));
@@ -514,6 +515,67 @@ const EditChannel = () => {
               value={config.user_id}
               autoComplete=''
             />
+          )}
+          {inputs.type === 40 && (
+            <>
+              <Form.Field>
+                <Form.Input
+                  label='Google Cloud Endpoint'
+                  name='base_url'
+                  placeholder={
+                    'Please enter your Google Cloud endpoint, for example: https://us-central1-aiplatform.googleapis.com'
+                  }
+                  onChange={handleInputChange}
+                  value={inputs.base_url}
+                  autoComplete='new-password'
+                />
+              </Form.Field>
+              <Form.Field>
+                <Form.Input
+                  label='Project ID'
+                  name='project_id'
+                  required
+                  placeholder={'Your Google Cloud Project ID'}
+                  onChange={handleConfigChange}
+                  value={config.project_id}
+                  autoComplete=''
+                />
+              </Form.Field>
+              <Form.Field>
+                <Form.Input
+                  label='Region'
+                  name='region'
+                  required
+                  placeholder={'Region where your model is deployed, e.g. us-central1'}
+                  onChange={handleConfigChange}
+                  value={config.region}
+                  autoComplete=''
+                />
+              </Form.Field>
+              <Message warning>
+                <Message.Header>Google Cloud Service Account Setup Instructions</Message.Header>
+                <Message.List>
+                  <Message.Item>1. Go to <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank" rel="noopener noreferrer">Google Cloud Console → IAM & Admin → Service Accounts</a></Message.Item>
+                  <Message.Item>2. Click "CREATE SERVICE ACCOUNT"</Message.Item>
+                  <Message.Item>3. Enter name: "one-api-vertex" and click "CREATE AND CONTINUE"</Message.Item>
+                  <Message.Item>4. Add role: "Vertex AI User" and click "CONTINUE" then "DONE"</Message.Item>
+                  <Message.Item>5. Click on the service account you just created</Message.Item>
+                  <Message.Item>6. Go to "KEYS" tab</Message.Item>
+                  <Message.Item>7. Click "ADD KEY" → "Create new key"</Message.Item>
+                  <Message.Item>8. Select "JSON" and click "CREATE"</Message.Item>
+                  <Message.Item>9. A JSON file will download - OPEN IT with a text editor</Message.Item>
+                  <Message.Item>10. <strong>COPY THE ENTIRE CONTENTS</strong> (all the brackets and everything inside)</Message.Item>
+                  <Message.Item>11. <strong>PASTE IT INTO THE KEY FIELD BELOW</strong></Message.Item>
+                </Message.List>
+                <p><strong>IMPORTANT:</strong></p>
+                <ul>
+                  <li>DO NOT paste just part of the JSON - paste the ENTIRE file contents</li>
+                  <li>The JSON will be very long (500+ characters) - this is normal</li>
+                  <li>Make sure your Google Cloud project has Vertex AI API enabled</li>
+                  <li>The key should start with {"{"} and end with {"}"}</li>
+                </ul>
+              </Message>
+            </>
           )}
           {inputs.type !== 33 &&
             (batch ? (

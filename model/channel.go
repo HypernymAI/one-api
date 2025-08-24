@@ -46,6 +46,7 @@ type ChannelConfig struct {
 	APIVersion string `json:"api_version,omitempty"`
 	LibraryID  string `json:"library_id,omitempty"`
 	Plugin     string `json:"plugin,omitempty"`
+	ProjectID  string `json:"project_id,omitempty"`
 }
 
 func GetAllChannels(startIdx int, num int, scope string) ([]*Channel, error) {

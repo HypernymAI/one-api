@@ -220,6 +220,12 @@ var ModelRatio = map[string]float64{
 	"deepl-zh": 25.0 / 1000 * USD,
 	"deepl-en": 25.0 / 1000 * USD,
 	"deepl-ja": 25.0 / 1000 * USD,
+	// Google Cloud Llama models (estimated pricing)
+	"meta/llama-3.1-8b-instruct-maas":             0.3 / 1000 * USD,
+	"meta/llama-3.1-405b-instruct-maas":           2.5 / 1000 * USD,
+	"meta/llama-3.3-70b-instruct-maas":            0.9 / 1000 * USD,
+	"meta/llama-4-scout-17b-16e-instruct-maas":    0.6 / 1000 * USD,
+	"meta/llama-4-maverick-17b-128e-instruct-maas": 0.6 / 1000 * USD,
 }
 
 var CompletionRatio = map[string]float64{}
@@ -349,6 +355,9 @@ func GetCompletionRatio(name string) float64 {
 	}
 	if strings.HasPrefix(name, "deepseek-") {
 		return 2
+	}
+	if strings.HasPrefix(name, "meta/llama-") {
+		return 3
 	}
 	switch name {
 	case "llama2-70b-4096":

@@ -65,7 +65,13 @@ func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, mode
 	c.Set(ctxkey.OriginalModel, modelName) // for retry
 	c.Request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", channel.Key))
 	c.Set(ctxkey.BaseURL, channel.GetBaseURL())
-	cfg, _ := channel.LoadConfig()
+	cfg, err := channel.LoadConfig()
+	if err != nil {
+		logger.SysError(fmt.Sprintf("Failed to load channel config for channel %d: %v", channel.Id, err))
+	}
+	if channel.Type == channeltype.GoogleOpenAI {
+		fmt.Printf("Channel %d config loaded: ProjectID='%s', Region='%s'\n", channel.Id, cfg.ProjectID, cfg.Region)
+	}
 	// this is for backward compatibility
 	switch channel.Type {
 	case channeltype.Azure:

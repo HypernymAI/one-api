@@ -31,12 +31,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func buildTestRequest() *relaymodel.GeneralOpenAIRequest {
+func buildTestRequest(channel *model.Channel) *relaymodel.GeneralOpenAIRequest {
 	testRequest := &relaymodel.GeneralOpenAIRequest{
 		MaxTokens: 2,
 		Stream:    false,
 		Model:     "gpt-3.5-turbo",
 	}
+	
+	// Use appropriate model for channel type
+	if channel.Type == channeltype.GoogleOpenAI && channel.Models != "" {
+		models := strings.Split(channel.Models, ",")
+		if len(models) > 0 {
+			testRequest.Model = models[0]
+		}
+	}
+	
 	testMessage := relaymodel.Message{
 		Role:    "user",
 		Content: "hi",
@@ -83,9 +92,11 @@ func testChannel(channel *model.Channel) (err error, openaiErr *relaymodel.Error
 			modelName = modelMap[modelName]
 		}
 	}
-	request := buildTestRequest()
-	request.Model = modelName
-	meta.OriginModelName, meta.ActualModelName = modelName, modelName
+	request := buildTestRequest(channel)
+	if modelName != "" && modelName != "gpt-3.5-turbo" {
+		request.Model = modelName
+	}
+	meta.OriginModelName, meta.ActualModelName = request.Model, request.Model
 	convertedRequest, err := adaptor.ConvertRequest(c, relaymode.ChatCompletions, request)
 	if err != nil {
 		return err, nil

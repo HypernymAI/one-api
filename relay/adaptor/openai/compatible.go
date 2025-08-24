@@ -4,6 +4,7 @@ import (
 	"github.com/songquanpeng/one-api/relay/adaptor/ai360"
 	"github.com/songquanpeng/one-api/relay/adaptor/baichuan"
 	"github.com/songquanpeng/one-api/relay/adaptor/deepseek"
+	"github.com/songquanpeng/one-api/relay/adaptor/googleopenai"
 	"github.com/songquanpeng/one-api/relay/adaptor/groq"
 	"github.com/songquanpeng/one-api/relay/adaptor/lingyiwanwu"
 	"github.com/songquanpeng/one-api/relay/adaptor/minimax"
@@ -16,6 +17,7 @@ import (
 
 var CompatibleChannels = []int{
 	channeltype.Azure,
+	channeltype.GoogleOpenAI,
 	channeltype.AI360,
 	channeltype.Moonshot,
 	channeltype.Baichuan,
@@ -32,6 +34,8 @@ func GetCompatibleChannelMeta(channelType int) (string, []string) {
 	switch channelType {
 	case channeltype.Azure:
 		return "azure", ModelList
+	case channeltype.GoogleOpenAI:
+		return "google", googleopenai.ModelList
 	case channeltype.AI360:
 		return "360", ai360.ModelList
 	case channeltype.Moonshot:

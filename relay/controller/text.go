@@ -55,7 +55,7 @@ func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {
 
 	// get request body
 	var requestBody io.Reader
-	if meta.APIType == apitype.OpenAI {
+	if meta.APIType == apitype.OpenAI && meta.ChannelType != channeltype.GoogleOpenAI {
 		// no need to convert request for openai
 		shouldResetRequestBody := isModelMapped || meta.ChannelType == channeltype.Baichuan // frequency_penalty 0 is not acceptable for baichuan
 		if shouldResetRequestBody {

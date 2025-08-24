@@ -23,6 +23,12 @@ export const CHANNEL_OPTIONS = {
     value: 3,
     color: 'success'
   },
+  40: {
+    key: 40,
+    text: 'Google OpenAI',
+    value: 40,
+    color: 'warning'
+  },
   11: {
     key: 11,
     text: 'Google PaLM2',
