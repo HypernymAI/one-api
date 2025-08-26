@@ -174,6 +174,9 @@ export const modelColorMap = {
   'gpt-4.1-mini': 'rgb(35,206,245)', // 天蓝色
   'gpt-4.1': 'rgb(135,206,245)', // 天蓝色
   'gpt-4.5-preview': 'rgb(206,135, 245)', // 天蓝色,
+  'gpt-5-nano': 'rgb(255,20,147)', // Deep pink
+  'gpt-5-mini': 'rgb(255,69,0)', // Red-orange  
+  'gpt-5-chat': 'rgb(220,20,60)', // Crimson
   'text-ada-001': 'rgb(255,192,203)', // 粉红色
   'text-babbage-001': 'rgb(255,160,122)', // 浅珊瑚色
   'text-curie-001': 'rgb(219,112,147)', // 苍紫罗兰色

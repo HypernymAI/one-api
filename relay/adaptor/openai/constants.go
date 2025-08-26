@@ -22,4 +22,6 @@ var ModelList = []string{
 	"o3", "o3-2025-04-16",
 	"o3-mini", "o3-mini-2025-01-31",
 	"o4-mini", "o4-mini-2025-04-16",
+	// GPT-5 series models
+	"gpt-5-chat", "gpt-5-mini", "gpt-5-nano",
 }

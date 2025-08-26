@@ -83,6 +83,9 @@ var ModelRatio = map[string]float64{
 	"o3-mini-2025-01-31":      1.5,
 	"o4-mini":                 0.75,
 	"o4-mini-2025-04-16":      0.75,
+	"gpt-5-chat":              2.8125,
+	"gpt-5-mini":              0.5625,
+	"gpt-5-nano":              0.1125,
 	// https://www.anthropic.com/api#pricing
 	// DEPRECATED: "claude-instant-1.2": 0.8 / 1000 * USD,
 	// DEPRECATED: "claude-2.0": 8.0 / 1000 * USD,
