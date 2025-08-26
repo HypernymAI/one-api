@@ -152,13 +152,13 @@ Added comprehensive step-by-step instructions for GoogleOpenAI channel type:
 UPDATE channels SET key = '[SERVICE_ACCOUNT_JSON]' WHERE id IN (6,7);
 ```
 
-Both GoogleOpenAI channels (us-central1 and us-east5) now use the same service account JSON.
+Both GoogleOpenAI channels ([REGION-1] and [REGION-2]) now use the same service account JSON.
 
 ## Testing Results
 
 ### Successful Authentication
 ```bash
-# Channel #6 (us-central1) - Llama 3.1-8B
+# Channel #6 ([REGION-1]) - Llama 3.1-8B
 curl -X POST http://localhost:3000/v1/chat/completions \
   -H "Authorization: Bearer sk-[REDACTED]" \
   -H "Content-Type: application/json" \
@@ -166,7 +166,7 @@ curl -X POST http://localhost:3000/v1/chat/completions \
 
 # Result: {"choices":[{"message":{"content":"How can I assist you today?"}}],"usage":{"total_tokens":45}}
 
-# Channel #7 (us-east5) - Llama 4-Maverick
+# Channel #7 ([REGION-2]) - Llama 4-Maverick
 curl -X POST http://localhost:3000/v1/chat/completions \
   -H "Authorization: Bearer sk-[REDACTED]" \
   -H "Content-Type: application/json" \
@@ -197,8 +197,8 @@ curl -X POST http://localhost:3000/v1/chat/completions \
 ## Configuration Summary
 
 ### Working Channels
-- **Channel #6**: us-central1, models: llama-3.1-8b, llama-3.1-405b, llama-3.3-70b
-- **Channel #7**: us-east5, models: llama-4-maverick-17b, llama-4-scout-17b
+- **Channel #6**: [REGION-1], models: llama-3.1-8b, llama-3.1-405b, llama-3.3-70b
+- **Channel #7**: [REGION-2], models: llama-4-maverick-17b, llama-4-scout-17b
 
 ### Authentication Method
 - **Type**: Service Account JSON
@@ -218,7 +218,7 @@ curl -X POST http://localhost:3000/v1/chat/completions \
 ### 1. Create Service Account (EXACTLY AS DONE)
 ```bash
 # Set correct project
-gcloud config set project hypernym-api
+gcloud config set project [PROJECT_ID]
 
 # Create service account
 gcloud iam service-accounts create one-api-vertex \
@@ -286,7 +286,7 @@ go build -ldflags "-s -w" -o one-api-en && screen -dmS one-api-server bash -c '.
 
 ### 6. EXACT TESTING COMMANDS THAT WORKED ✅
 ```bash
-# Test Channel #6 (us-central1) - Llama 3.1-8B
+# Test Channel #6 ([REGION-1]) - Llama 3.1-8B
 curl -s -X POST http://localhost:3000/v1/chat/completions \
   -H "Authorization: Bearer sk-[REDACTED]" \
   -H "Content-Type: application/json" \
@@ -294,7 +294,7 @@ curl -s -X POST http://localhost:3000/v1/chat/completions \
 
 # RESULT: {"choices":[{"message":{"content":"How can I assist you today?"}}],"usage":{"total_tokens":45}}
 
-# Test Channel #7 (us-east5) - Llama 4-Maverick  
+# Test Channel #7 ([REGION-2]) - Llama 4-Maverick  
 curl -s -X POST http://localhost:3000/v1/chat/completions \
   -H "Authorization: Bearer sk-[REDACTED]" \
   -H "Content-Type: application/json" \
