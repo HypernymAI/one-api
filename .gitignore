@@ -12,3 +12,4 @@ cmd.md
 .DS_Store
 /one-api
 /one-api-en
+/node_modules
