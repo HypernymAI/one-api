@@ -4,6 +4,8 @@ var ModelList = []string{
 	"command", "command-nightly",
 	"command-light", "command-light-nightly",
 	"command-r", "command-r-plus",
+	"command-a-03-2025",
+	"command-a-reasoning-08-2025",
 }
 
 func init() {

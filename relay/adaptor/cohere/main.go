@@ -74,6 +74,29 @@ func ConvertRequest(textRequest model.GeneralOpenAIRequest) *Request {
 	return &cohereRequest
 }
 
+func ConvertRequestV2(textRequest model.GeneralOpenAIRequest) *RequestV2 {
+	cohereRequest := RequestV2{
+		Model:       textRequest.Model,
+		Stream:      textRequest.Stream,
+		Temperature: textRequest.Temperature,
+		MaxTokens:   textRequest.MaxTokens,
+		P:           textRequest.TopP,
+		K:           textRequest.TopK,
+		Seed:        int(textRequest.Seed),
+		Messages:    []MessageV2Request{},
+	}
+
+	// Convert OpenAI messages to Cohere v2 format
+	for _, message := range textRequest.Messages {
+		cohereRequest.Messages = append(cohereRequest.Messages, MessageV2Request{
+			Role:    message.Role,
+			Content: message.Content.(string),
+		})
+	}
+
+	return &cohereRequest
+}
+
 func StreamResponseCohere2OpenAI(cohereResponse *StreamResponse) (*openai.ChatCompletionsStreamResponse, *Response) {
 	var response *Response
 	var responseText string
@@ -206,6 +229,22 @@ func Handler(c *gin.Context, resp *http.Response, promptTokens int, modelName st
 	if err != nil {
 		return openai.ErrorWrapper(err, "close_response_body_failed", http.StatusInternalServerError), nil
 	}
+
+	// Check if it's a v2 response by looking for the "id" field
+	var checkResponse map[string]interface{}
+	err = json.Unmarshal(responseBody, &checkResponse)
+	if err != nil {
+		return openai.ErrorWrapper(err, "unmarshal_check_response_failed", http.StatusInternalServerError), nil
+	}
+
+	// If it has "id" field and "message" with "content" array, it's v2
+	if id, hasID := checkResponse["id"]; hasID && id != nil {
+		if msg, hasMsg := checkResponse["message"]; hasMsg && msg != nil {
+			return HandlerV2(c, responseBody, modelName)
+		}
+	}
+
+	// Otherwise, handle as v1
 	var cohereResponse Response
 	err = json.Unmarshal(responseBody, &cohereResponse)
 	if err != nil {
@@ -236,6 +275,59 @@ func Handler(c *gin.Context, resp *http.Response, promptTokens int, modelName st
 	}
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(resp.StatusCode)
+	_, err = c.Writer.Write(jsonResponse)
+	return nil, &usage
+}
+
+func HandlerV2(c *gin.Context, responseBody []byte, modelName string) (*model.ErrorWithStatusCode, *model.Usage) {
+	var cohereResponse ResponseV2
+	err := json.Unmarshal(responseBody, &cohereResponse)
+	if err != nil {
+		return openai.ErrorWrapper(err, "unmarshal_v2_response_failed", http.StatusInternalServerError), nil
+	}
+
+	// Extract text content from the response (ignore thinking for now)
+	var textContent string
+	for _, content := range cohereResponse.Message.Content {
+		if content.Type == "text" {
+			textContent = content.Text
+			break
+		}
+	}
+
+	// Convert to OpenAI format
+	choice := openai.TextResponseChoice{
+		Index: 0,
+		Message: model.Message{
+			Role:    "assistant",
+			Content: textContent,
+		},
+		FinishReason: strings.ToLower(cohereResponse.FinishReason),
+	}
+
+	fullTextResponse := openai.TextResponse{
+		Id:      fmt.Sprintf("chatcmpl-%s", cohereResponse.ID),
+		Model:   modelName,
+		Object:  "chat.completion",
+		Created: helper.GetTimestamp(),
+		Choices: []openai.TextResponseChoice{choice},
+	}
+
+	// Use billed units for usage tracking
+	usage := model.Usage{
+		PromptTokens:     cohereResponse.Usage.BilledUnits.InputTokens,
+		CompletionTokens: cohereResponse.Usage.BilledUnits.OutputTokens,
+		TotalTokens:      cohereResponse.Usage.BilledUnits.InputTokens + cohereResponse.Usage.BilledUnits.OutputTokens,
+	}
+	fullTextResponse.Usage = usage
+
+	jsonResponse, err := json.Marshal(fullTextResponse)
+	if err != nil {
+		return openai.ErrorWrapper(err, "marshal_v2_response_failed", http.StatusInternalServerError), nil
+	}
+
+	c.Writer.Header().Set("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
 	_, err = c.Writer.Write(jsonResponse)
 	return nil, &usage
 }

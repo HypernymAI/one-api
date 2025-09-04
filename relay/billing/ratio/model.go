@@ -214,6 +214,8 @@ var ModelRatio = map[string]float64{
 	"command-light-nightly": 0.5,
 	"command-r":             0.5 / 1000 * USD,
 	"command-r-plus":        3.0 / 1000 * USD,
+	"command-a-03-2025":     4.0 / 1000 * USD,
+	"command-a-reasoning-08-2025": 5.0 / 1000 * USD,
 	// https://platform.deepseek.com/api-docs/pricing/
 	"deepseek-chat":  1.0 / 1000 * RMB,
 	"deepseek-coder": 1.0 / 1000 * RMB,
@@ -374,6 +376,10 @@ func GetCompletionRatio(name string) float64 {
 	case "command-r":
 		return 3
 	case "command-r-plus":
+		return 5
+	case "command-a-03-2025":
+		return 5
+	case "command-a-reasoning-08-2025":
 		return 5
 	}
 	return 1

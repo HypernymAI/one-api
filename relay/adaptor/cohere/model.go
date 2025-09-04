@@ -23,6 +23,19 @@ type Request struct {
 	ToolResults      []ToolResult  `json:"tool_results,omitempty"`
 }
 
+// V2 Request structure
+type RequestV2 struct {
+	Model       string              `json:"model"`
+	Messages    []MessageV2Request  `json:"messages"`
+	Stream      bool                `json:"stream,omitempty"`
+	Temperature float64             `json:"temperature,omitempty"`
+	MaxTokens   int                 `json:"max_tokens,omitempty"`
+	P           float64             `json:"p,omitempty"`
+	K           int                 `json:"k,omitempty"`
+	Seed        int                 `json:"seed,omitempty"`
+	Tools       []Tool              `json:"tools,omitempty"`
+}
+
 type ChatMessage struct {
 	Role    string `json:"role" required:"true"`
 	Message string `json:"message" required:"true"`
@@ -107,6 +120,40 @@ type Response struct {
 	Message       string          `json:"message"`
 }
 
+// V2 Response structures
+type ResponseV2 struct {
+	ID           string        `json:"id"`
+	Message      MessageV2     `json:"message"`
+	FinishReason string        `json:"finish_reason"`
+	Usage        UsageV2       `json:"usage"`
+}
+
+type MessageV2Request struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type MessageV2 struct {
+	Role    string         `json:"role"`
+	Content []ContentPart  `json:"content"`
+}
+
+type ContentPart struct {
+	Type     string `json:"type"`     // "thinking" or "text"
+	Text     string `json:"text,omitempty"`
+	Thinking string `json:"thinking,omitempty"`
+}
+
+type UsageV2 struct {
+	BilledUnits BilledUnits `json:"billed_units"`
+	Tokens      Usage       `json:"tokens"`
+}
+
+type BilledUnits struct {
+	InputTokens  int `json:"input_tokens"`
+	OutputTokens int `json:"output_tokens"`
+}
+
 type Message struct {
 	Role    string `json:"role"`
 	Message string `json:"message"`
@@ -134,11 +181,6 @@ type Meta struct {
 
 type APIVersion struct {
 	Version string `json:"version"`
-}
-
-type BilledUnits struct {
-	InputTokens  int `json:"input_tokens"`
-	OutputTokens int `json:"output_tokens"`
 }
 
 type Usage struct {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/songquanpeng/one-api/relay/adaptor"
@@ -26,6 +27,10 @@ func (a *Adaptor) Init(meta *meta.Meta) {
 }
 
 func (a *Adaptor) GetRequestURL(meta *meta.Meta) (string, error) {
+	// Use v2 API for reasoning models
+	if strings.Contains(strings.ToLower(meta.ActualModelName), "reasoning") {
+		return fmt.Sprintf("%s/v2/chat", meta.BaseURL), nil
+	}
 	return fmt.Sprintf("%s/v1/chat", meta.BaseURL), nil
 }
 
@@ -39,6 +44,13 @@ func (a *Adaptor) ConvertRequest(c *gin.Context, relayMode int, request *model.G
 	if request == nil {
 		return nil, errors.New("request is nil")
 	}
+	
+	// Check if it's a reasoning model that requires v2 API
+	// Use the model name from the request instead of meta
+	if strings.Contains(strings.ToLower(request.Model), "reasoning") {
+		return ConvertRequestV2(*request), nil
+	}
+	
 	return ConvertRequest(*request), nil
 }
 
