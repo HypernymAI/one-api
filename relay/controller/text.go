@@ -55,8 +55,12 @@ func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {
 
 	// get request body
 	var requestBody io.Reader
-	if meta.APIType == apitype.OpenAI && meta.ChannelType != channeltype.GoogleOpenAI {
-		// no need to convert request for openai
+	// Azure channels need special handling for reasoning models (gpt-5-mini, gpt-5-nano)
+	needsConversion := meta.ChannelType == channeltype.Azure && 
+		(textRequest.Model == "gpt-5-mini" || textRequest.Model == "gpt-5-nano")
+	
+	if meta.APIType == apitype.OpenAI && meta.ChannelType != channeltype.GoogleOpenAI && !needsConversion {
+		// no need to convert request for openai (except Azure reasoning models)
 		shouldResetRequestBody := isModelMapped || meta.ChannelType == channeltype.Baichuan // frequency_penalty 0 is not acceptable for baichuan
 		if shouldResetRequestBody {
 			jsonStr, err := json.Marshal(textRequest)

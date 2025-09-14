@@ -1,12 +1,11 @@
 package aws
 
 import (
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/songquanpeng/one-api/common/ctxkey"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
@@ -25,10 +24,9 @@ type Adaptor struct {
 
 func (a *Adaptor) Init(meta *meta.Meta) {
 	a.meta = meta
-	a.awsClient = bedrockruntime.New(bedrockruntime.Options{
-		Region:      meta.Config.Region,
-		Credentials: aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(meta.Config.AK, meta.Config.SK, "")),
-	})
+	// Use the client pool instead of creating a new client
+	pool := GetClientPool()
+	a.awsClient = pool.GetClient(meta.Config.Region, meta.Config.AK, meta.Config.SK)
 }
 
 func (a *Adaptor) GetRequestURL(meta *meta.Meta) (string, error) {
@@ -44,10 +42,19 @@ func (a *Adaptor) ConvertRequest(c *gin.Context, relayMode int, request *model.G
 		return nil, errors.New("request is nil")
 	}
 
-	claudeReq := anthropic.ConvertRequest(*request)
 	c.Set(ctxkey.RequestModel, request.Model)
-	c.Set(ctxkey.ConvertedRequest, claudeReq)
-	return claudeReq, nil
+	
+	// Check if it's a Llama model
+	if strings.HasPrefix(request.Model, "llama-") {
+		// For Llama models, store the original request since we'll convert it in the handler
+		c.Set(ctxkey.ConvertedRequest, request)
+		return request, nil
+	} else {
+		// For Claude models, convert to Anthropic format
+		claudeReq := anthropic.ConvertRequest(*request)
+		c.Set(ctxkey.ConvertedRequest, claudeReq)
+		return claudeReq, nil
+	}
 }
 
 func (a *Adaptor) ConvertImageRequest(request *model.ImageRequest) (any, error) {

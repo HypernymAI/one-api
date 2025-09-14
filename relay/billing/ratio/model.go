@@ -102,6 +102,7 @@ var ModelRatio = map[string]float64{
 	"claude-3-7-sonnet-20250219": 3.0 / 1000 * USD,
 	"claude-3-7-sonnet-latest":   3.0 / 1000 * USD,
 	"claude-opus-4-20250514":     15.0 / 1000 * USD,
+	"claude-opus-4-1-20250805":   15.0 / 1000 * USD,
 	"claude-sonnet-4-20250514":   3.0 / 1000 * USD,
 	// https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlrk4akp7
 	"ERNIE-4.0-8K":       0.120 * RMB,
@@ -126,18 +127,18 @@ var ModelRatio = map[string]float64{
 	"gemini-pro-vision":         1, // $0.00025 / 1k characters -> $0.001 / 1k tokens
 	"gemini-1.0-pro-vision-001": 1,
 	// "gemini-1.0-pro-001":     1, // DEPRECATED
-	"gemini-1.5-pro":            1,
+	"gemini-1.5-pro":            0.625,  // $1.25/M input = $0.00125/1K tokens
 	// ZX7M9: Additional Gemini models
-	"gemini-1.5-flash":          0.075 * MILLI_USD,
+	"gemini-1.5-flash":          0.125,  // $0.25/M input = $0.00025/1K tokens
 	"gemini-1.5-flash-8b":       0.0375 * MILLI_USD,
 	"gemini-1.5-pro-experimental": 1.25 * MILLI_USD,
-	"gemini-2.0-flash":          0.075 * MILLI_USD,
+	"gemini-2.0-flash":          0.05,   // $0.10/M input = $0.0001/1K tokens
 	"gemini-2.0-flash-exp":      0.075 * MILLI_USD,
 	"gemini-2.0-flash-lite-preview-02-05": 0.0375 * MILLI_USD,
 	"gemini-2.0-flash-thinking-exp-01-21": 0.075 * MILLI_USD,
 	"gemini-2.0-pro-exp-02-05":  1.25 * MILLI_USD,
-	"gemini-2.5-flash":          0.0375 * MILLI_USD,
-	"gemini-2.5-pro":            2.5 * MILLI_USD,
+	"gemini-2.5-flash":          0.15,   // $0.30/M input = $0.0003/1K tokens
+	"gemini-2.5-pro":            0.625,  // $1.25/M input = $0.00125/1K tokens
 	"text-embedding-004":        0.01 * MILLI_USD,
 	"aqa":                       1,
 	// https://open.bigmodel.cn/pricing
@@ -231,6 +232,18 @@ var ModelRatio = map[string]float64{
 	"meta/llama-3.3-70b-instruct-maas":            0.9 / 1000 * USD,
 	"meta/llama-4-scout-17b-16e-instruct-maas":    0.6 / 1000 * USD,
 	"meta/llama-4-maverick-17b-128e-instruct-maas": 0.6 / 1000 * USD,
+	// AWS Bedrock Llama models (matching our adapter naming)
+	"llama-3-8b":           0.3 / 1000 * USD,
+	"llama-3-70b":          0.9 / 1000 * USD,
+	"llama-3.1-8b":         0.3 / 1000 * USD,
+	"llama-3.1-70b":        0.9 / 1000 * USD,
+	"llama-3.2-1b":         0.1 / 1000 * USD,
+	"llama-3.2-3b":         0.15 / 1000 * USD,
+	"llama-3.2-11b":        0.35 / 1000 * USD,
+	"llama-3.2-90b":        1.2 / 1000 * USD,
+	"llama-3.3-70b":        0.9 / 1000 * USD,
+	"llama-4-scout-17b":    0.6 / 1000 * USD,
+	"llama-4-maverick-17b": 0.6 / 1000 * USD,
 }
 
 var CompletionRatio = map[string]float64{}

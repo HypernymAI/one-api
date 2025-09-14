@@ -132,7 +132,25 @@ func ListAllModels(c *gin.Context) {
 func ListModels(c *gin.Context) {
 	ctx := c.Request.Context()
 	var availableModels []string
-	if c.GetString(ctxkey.AvailableModels) != "" {
+	
+	// Check if admin is using a specific channel suffix
+	specificChannelId := c.GetString(ctxkey.SpecificChannelId)
+	if specificChannelId != "" {
+		// Admin using channel suffix - return only that channel's models from database
+		channelIdInt := 0
+		fmt.Sscanf(specificChannelId, "%d", &channelIdInt)
+		channel, err := model.GetChannelById(channelIdInt, false)
+		if err == nil && channel.Models != "" {
+			availableModels = strings.Split(channel.Models, ",")
+		} else {
+			// Fall back to hardcoded models or return empty
+			if channelModels, ok := channelId2Models[channelIdInt]; ok {
+				availableModels = channelModels
+			} else {
+				availableModels = []string{}
+			}
+		}
+	} else if c.GetString(ctxkey.AvailableModels) != "" {
 		availableModels = strings.Split(c.GetString(ctxkey.AvailableModels), ",")
 	} else {
 		userId := c.GetInt(ctxkey.Id)
