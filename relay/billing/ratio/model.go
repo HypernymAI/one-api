@@ -104,6 +104,7 @@ var ModelRatio = map[string]float64{
 	"claude-opus-4-20250514":     15.0 / 1000 * USD,
 	"claude-opus-4-1-20250805":   15.0 / 1000 * USD,
 	"claude-sonnet-4-20250514":   3.0 / 1000 * USD,
+	"claude-sonnet-4-5-20250929": 3.0 / 1000 * USD,
 	// https://cloud.baidu.com/doc/WENXINWORKSHOP/s/hlrk4akp7
 	"ERNIE-4.0-8K":       0.120 * RMB,
 	"ERNIE-3.5-8K":       0.012 * RMB,
