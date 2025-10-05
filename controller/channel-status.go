@@ -68,6 +68,10 @@ func CheckChannelModelsStatus(c *gin.Context) {
 		modelStatuses = checkGeminiModels(channel, models)
 	case channeltype.Azure:
 		modelStatuses = checkAzureModels(channel, models)
+	case channeltype.OpenAI:
+		modelStatuses = checkOpenAIModels(channel, models)
+	case channeltype.Anthropic:
+		modelStatuses = checkAnthropicModels(channel, models)
 	default:
 		// For unsupported types, return all models as "unknown"
 		for _, model := range models {
@@ -434,6 +438,217 @@ func checkAzureModels(channel *model.Channel, models []string) []ModelStatus {
 	return statuses
 }
 
+func checkOpenAIModels(channel *model.Channel, models []string) []ModelStatus {
+	var statuses []ModelStatus
+	
+	// OpenAI's /v1/models endpoint lists all available models
+	baseURL := channel.GetBaseURL()
+	if baseURL == "" {
+		baseURL = "https://api.openai.com"
+	}
+	url := fmt.Sprintf("%s/v1/models", baseURL)
+	
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to create request: %v", err),
+			})
+		}
+		return statuses
+	}
+	
+	req.Header.Set("Authorization", "Bearer " + channel.Key)
+	
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to list models: %v", err),
+			})
+		}
+		return statuses
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("API error (status %d): %s", resp.StatusCode, string(body)),
+			})
+		}
+		return statuses
+	}
+
+	// Parse models response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to read response: %v", err),
+			})
+		}
+		return statuses
+	}
+
+	var modelsResp struct {
+		Data []struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+
+	if err := json.Unmarshal(body, &modelsResp); err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to parse models: %v", err),
+			})
+		}
+		return statuses
+	}
+
+	// Create a map of available models
+	availableModels := make(map[string]bool)
+	for _, modelInfo := range modelsResp.Data {
+		availableModels[modelInfo.ID] = true
+	}
+
+	// Check each requested model
+	for _, modelName := range models {
+		if availableModels[modelName] {
+			statuses = append(statuses, ModelStatus{
+				Model:     modelName,
+				Available: true,
+			})
+		} else {
+			statuses = append(statuses, ModelStatus{
+				Model:     modelName,
+				Available: false,
+				Error:     "Model not found in available models list",
+			})
+		}
+	}
+	
+	return statuses
+}
+
+func checkAnthropicModels(channel *model.Channel, models []string) []ModelStatus {
+	var statuses []ModelStatus
+	
+	// Anthropic's /v1/models endpoint lists available models
+	baseURL := channel.GetBaseURL()
+	if baseURL == "" {
+		baseURL = "https://api.anthropic.com"
+	}
+	url := fmt.Sprintf("%s/v1/models", baseURL)
+	
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to create request: %v", err),
+			})
+		}
+		return statuses
+	}
+	
+	req.Header.Set("x-api-key", channel.Key)
+	req.Header.Set("anthropic-version", "2023-06-01")
+	
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to list models: %v", err),
+			})
+		}
+		return statuses
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("API error (status %d): %s", resp.StatusCode, string(body)),
+			})
+		}
+		return statuses
+	}
+
+	// Parse models response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to read response: %v", err),
+			})
+		}
+		return statuses
+	}
+
+	var modelsResp struct {
+		Data []struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+
+	if err := json.Unmarshal(body, &modelsResp); err != nil {
+		for _, model := range models {
+			statuses = append(statuses, ModelStatus{
+				Model:     model,
+				Available: false,
+				Error:     fmt.Sprintf("Failed to parse models: %v", err),
+			})
+		}
+		return statuses
+	}
+
+	// Create a map of available models
+	availableModels := make(map[string]bool)
+	for _, modelInfo := range modelsResp.Data {
+		availableModels[modelInfo.ID] = true
+	}
+
+	// Check each requested model
+	for _, modelName := range models {
+		if availableModels[modelName] {
+			statuses = append(statuses, ModelStatus{
+				Model:     modelName,
+				Available: true,
+			})
+		} else {
+			statuses = append(statuses, ModelStatus{
+				Model:     modelName,
+				Available: false,
+				Error:     "Model not found in available models list",
+			})
+		}
+	}
+	
+	return statuses
+}
+
 func getAWSModelMap() map[string]string {
 	// Copy from relay/adaptor/aws/main.go
 	return map[string]string{
@@ -472,6 +687,10 @@ func getChannelTypeName(channelType int) string {
 		return "Google Gemini"
 	case channeltype.Azure:
 		return "Azure OpenAI"
+	case channeltype.OpenAI:
+		return "OpenAI"
+	case channeltype.Anthropic:
+		return "Anthropic"
 	default:
 		return fmt.Sprintf("Type %d", channelType)
 	}
